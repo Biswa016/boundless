@@ -300,6 +300,12 @@ where
         let order_id = order.id();
         tracing::debug!("Pricing order {order_id}");
 
+        // Skip secondary orders immediately
+        if order.fulfillment_type FulfillmentType:: FulfillAfterLockExpire {
+            tracing:: info! ("Skipping secondary order (order_id) (FulfillAfterLockExpire)");
+            return Ok(Skip);
+        }
+        
         let now = now_timestamp();
 
         // If order_expiration > lock_expiration the period in-between is when order can be filled
